@@ -1,36 +1,108 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🏰 QuestWeaver
 
-## Getting Started
+An AI-powered D&D-style adventure game that makes tabletop RPGs accessible to everyone.
 
-First, run the development server:
+![QuestWeaver](https://img.shields.io/badge/Status-Foundation%20Complete-green)
+![Next.js](https://img.shields.io/badge/Next.js-16.1-black)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)
+![Tailwind](https://img.shields.io/badge/Tailwind-4.0-cyan)
+
+## ✨ Features (Foundation)
+
+- **🎭 Narrative Chat Interface** - Fantasy-themed message bubbles for story display
+- **📊 Character Sheet** - Slide-out panel with stats, abilities, and equipment
+- **🎲 Dice Roller** - Tactile dice selection with modifiers and crit detection
+- **⚔️ Action Bar** - Quick combat actions with cooldown indicators
+- **🔄 Turn Order** - Visual turn tracker with HP bars
+- **💾 Auto-Save** - LocalStorage persistence (never lose progress)
+- **📱 Mobile-First** - Designed for phones, works everywhere
+
+## 🚀 Quick Start
 
 ```bash
+# Install dependencies
+npm install
+
+# Start development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+
+# Open in browser
+open http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 📁 Project Structure
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+questweaver/
+├── src/
+│   ├── app/
+│   │   ├── page.tsx          # Main game interface
+│   │   ├── layout.tsx        # App shell
+│   │   └── globals.css       # Fantasy theme styles
+│   ├── components/
+│   │   ├── ChatWindow.tsx    # Narrative display
+│   │   ├── CharacterSheet.tsx # Stats/abilities panel
+│   │   ├── DiceRoller.tsx    # Dice UI with animations
+│   │   ├── ActionBar.tsx     # Combat action buttons
+│   │   ├── TurnIndicator.tsx # Turn order display
+│   │   └── GameHeader.tsx    # Top bar with controls
+│   ├── lib/
+│   │   ├── gameState.ts      # State management
+│   │   ├── useGameState.ts   # React hooks
+│   │   └── dice.ts           # Dice rolling utilities
+│   ├── data/
+│   │   └── mockData.ts       # Test character & encounter
+│   └── types/
+│       └── game.ts           # TypeScript interfaces
+└── public/
+    └── manifest.json         # PWA manifest
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🎮 Current Demo
 
-## Learn More
+The foundation includes a mock encounter with:
 
-To learn more about Next.js, take a look at the following resources:
+- **Character:** Thorin Ironforge, Level 3 Warrior
+- **Enemies:** Goblin Scout, Goblin Archer, Goblin Brute
+- **Abilities:** Power Strike, Shield Bash, Rally, Intimidating Shout
+- **Sample narrative** showing the encounter flow
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Actions are currently simulated (no AI yet) - clicking Attack rolls dice and shows mock combat results.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🎨 Design
 
-## Deploy on Vercel
+- **Theme:** Cozy tavern fantasy (light-hearted, not dark dungeon)
+- **Colors:** Warm ambers and oranges on parchment backgrounds
+- **Mobile:** Touch-friendly buttons, slide-out panels
+- **Accessibility:** Color contrast, keyboard navigation, screen reader labels
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 🔮 Next Steps
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. **AI Integration** - Connect Gemini Flash for narrative generation
+2. **Real Combat Logic** - Implement the full turn system
+3. **"Goblin Ambush" Encounter** - First playable scenario
+4. **Sound Effects** - Dice rolls, combat sounds
+5. **Victory/Defeat Polish** - XP gains, loot preview
+
+## 📜 Tech Stack
+
+| Layer | Choice |
+|-------|--------|
+| Framework | Next.js 16 (App Router) |
+| Styling | Tailwind CSS 4 |
+| Language | TypeScript 5 |
+| State | React hooks + LocalStorage |
+| AI (planned) | Gemini Flash |
+| Database (planned) | Supabase |
+
+## 🤝 Contributing
+
+This is a personal project, but ideas are welcome! Open an issue to discuss.
+
+## 📄 License
+
+MIT
+
+---
+
+*Built with 🎲 and ☕ by the QuestWeaver team*
