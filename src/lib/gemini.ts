@@ -32,14 +32,16 @@ You MUST respond with valid JSON in this exact format:
   "delta": {
     "playerDamage": number or null,
     "playerHealing": number or null,
-    "enemyDamage": [{"enemyId": "id", "damage": number}] or null,
-    "enemyDefeated": ["enemyId"] or null,
-    "abilityUsed": "abilityId" or null,
-    "cooldownsUpdated": [{"abilityId": "id", "cooldown": number}] or null,
+    "enemyDamage": [{"enemyId": "goblin-1", "damage": number}] or null,
+    "enemyDefeated": ["goblin-1"] or null,
+    "abilityUsed": "power-strike" or null (use the exact ability ID from character abilities),
+    "cooldownsUpdated": [{"abilityId": "power-strike", "cooldown": 2}] or null,
     "turnAdvance": true,
     "encounterStatus": "active" or "victory" or "defeat"
   }
 }
+
+IMPORTANT: Use the exact IDs provided in the game state (e.g., "goblin-1", "power-strike"), not the display names!
 
 ## Damage Guidelines
 - Basic attack: 4-10 damage on hit
@@ -69,7 +71,7 @@ function buildGameContext(state: GameState): string {
   context += `- Abilities:\n`;
   character.abilities.forEach(a => {
     const ready = a.currentCooldown === 0 ? '✓ Ready' : `(${a.currentCooldown} turns)`;
-    context += `  - ${a.name}: ${a.effect} ${ready}\n`;
+    context += `  - ${a.name} (id: "${a.id}"): ${a.effect} ${ready}\n`;
   });
   
   // Encounter status
