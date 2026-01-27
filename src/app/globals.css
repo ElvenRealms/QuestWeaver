@@ -5,6 +5,9 @@
   --foreground: #292524;
   --primary: #d97706;
   --primary-foreground: #ffffff;
+  --damage-flash: #ef4444;
+  --heal-flash: #22c55e;
+  --crit-glow: #eab308;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -13,6 +16,9 @@
     --foreground: #fafaf9;
     --primary: #f59e0b;
     --primary-foreground: #1c1917;
+    --damage-flash: #dc2626;
+    --heal-flash: #16a34a;
+    --crit-glow: #facc15;
   }
 }
 
@@ -20,6 +26,8 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* Custom scrollbar */
@@ -51,7 +59,8 @@ body {
   }
 }
 
-/* Custom animations */
+/* ===== ANIMATION KEYFRAMES ===== */
+
 @keyframes fade-in {
   from {
     opacity: 0;
@@ -60,6 +69,28 @@ body {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
   }
 }
 
@@ -74,27 +105,110 @@ body {
 
 @keyframes shake {
   0%, 100% { transform: translateX(0); }
-  10%, 30%, 50%, 70%, 90% { transform: translateX(-2px); }
-  20%, 40%, 60%, 80% { transform: translateX(2px); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-3px); }
+  20%, 40%, 60%, 80% { transform: translateX(3px); }
+}
+
+@keyframes shake-intense {
+  0%, 100% { transform: translateX(0) scale(1); }
+  10%, 50%, 90% { transform: translateX(-4px) scale(0.98); }
+  30%, 70% { transform: translateX(4px) scale(1.02); }
 }
 
 @keyframes dice-roll {
   0% { transform: rotate(0deg) scale(1); }
-  25% { transform: rotate(90deg) scale(1.1); }
-  50% { transform: rotate(180deg) scale(1); }
-  75% { transform: rotate(270deg) scale(1.1); }
+  25% { transform: rotate(90deg) scale(1.2); }
+  50% { transform: rotate(180deg) scale(0.9); }
+  75% { transform: rotate(270deg) scale(1.15); }
   100% { transform: rotate(360deg) scale(1); }
+}
+
+@keyframes dice-bounce {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  20% { transform: translateY(-15px) rotate(-10deg); }
+  40% { transform: translateY(-8px) rotate(8deg); }
+  60% { transform: translateY(-4px) rotate(-5deg); }
+  80% { transform: translateY(-2px) rotate(3deg); }
 }
 
 @keyframes bounce-in {
   0% { transform: scale(0.3); opacity: 0; }
   50% { transform: scale(1.05); }
-  70% { transform: scale(0.9); }
+  70% { transform: scale(0.95); }
   100% { transform: scale(1); opacity: 1; }
 }
 
+@keyframes pop-in {
+  0% { transform: scale(0); opacity: 0; }
+  60% { transform: scale(1.1); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 5px var(--crit-glow), 0 0 10px var(--crit-glow); }
+  50% { box-shadow: 0 0 20px var(--crit-glow), 0 0 40px var(--crit-glow); }
+}
+
+@keyframes damage-flash {
+  0% { background-color: var(--damage-flash); }
+  100% { background-color: transparent; }
+}
+
+@keyframes heal-flash {
+  0% { background-color: var(--heal-flash); }
+  100% { background-color: transparent; }
+}
+
+@keyframes hp-decrease {
+  0% { filter: brightness(1.5) saturate(1.5); }
+  50% { filter: brightness(0.8) saturate(1.2); }
+  100% { filter: brightness(1) saturate(1); }
+}
+
+@keyframes hp-increase {
+  0% { filter: brightness(1.5) saturate(1.5) hue-rotate(-20deg); }
+  100% { filter: brightness(1) saturate(1) hue-rotate(0deg); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+@keyframes victory-burst {
+  0% { transform: scale(0) rotate(-180deg); opacity: 0; }
+  50% { transform: scale(1.2) rotate(10deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+@keyframes defeat-fall {
+  0% { transform: scale(1) translateY(0); opacity: 1; }
+  50% { transform: scale(0.9) translateY(10px); opacity: 0.8; }
+  100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes turn-pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.05); opacity: 0.9; }
+}
+
+/* ===== ANIMATION CLASSES ===== */
+
 .animate-fade-in {
   animation: fade-in 0.3s ease-out forwards;
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.4s ease-out forwards;
+}
+
+.animate-slide-in-right {
+  animation: slide-in-right 0.3s ease-out forwards;
 }
 
 .animate-pulse-soft {
@@ -102,18 +216,73 @@ body {
 }
 
 .animate-shake {
-  animation: shake 0.5s ease-in-out;
+  animation: shake 0.4s ease-in-out;
+}
+
+.animate-shake-intense {
+  animation: shake-intense 0.5s ease-in-out;
 }
 
 .animate-dice-roll {
-  animation: dice-roll 0.5s ease-out;
+  animation: dice-roll 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animate-dice-bounce {
+  animation: dice-bounce 0.8s ease-out;
 }
 
 .animate-bounce-in {
   animation: bounce-in 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
-/* Fantasy-themed decorative elements */
+.animate-pop-in {
+  animation: pop-in 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.animate-glow-pulse {
+  animation: glow-pulse 1.5s ease-in-out infinite;
+}
+
+.animate-damage {
+  animation: damage-flash 0.3s ease-out, shake-intense 0.4s ease-in-out;
+}
+
+.animate-heal {
+  animation: heal-flash 0.4s ease-out;
+}
+
+.animate-hp-decrease {
+  animation: hp-decrease 0.5s ease-out;
+}
+
+.animate-hp-increase {
+  animation: hp-increase 0.5s ease-out;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-victory {
+  animation: victory-burst 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.animate-defeat {
+  animation: defeat-fall 1s ease-in-out;
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+.animate-turn-pulse {
+  animation: turn-pulse 2s ease-in-out infinite;
+}
+
+/* ===== FANTASY THEME ELEMENTS ===== */
+
 .fantasy-border {
   border-image: linear-gradient(
     to right,
@@ -142,22 +311,162 @@ body {
   }
 }
 
-/* Mobile safe area support */
+/* ===== MOBILE SUPPORT ===== */
+
 @supports (padding-bottom: env(safe-area-inset-bottom)) {
   .safe-area-bottom {
     padding-bottom: env(safe-area-inset-bottom);
   }
 }
 
-/* Prevent text selection on buttons during gameplay */
+/* Minimum touch target size for mobile */
+.touch-target {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+/* ===== BUTTON STYLES ===== */
+
 button {
   user-select: none;
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Smooth transitions for dark mode */
+/* Enhanced button hover/active states */
+button:not(:disabled) {
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+
+button:not(:disabled):hover {
+  transform: translateY(-1px);
+}
+
+button:not(:disabled):active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* Focus states for accessibility */
+button:focus-visible,
+input:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* ===== SMOOTH TRANSITIONS ===== */
+
 * {
-  transition-property: background-color, border-color;
-  transition-duration: 200ms;
-  transition-timing-function: ease-out;
+  transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform;
+  transition-duration: 150ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Disable transitions for reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ===== UTILITY CLASSES ===== */
+
+/* Smooth scroll for containers */
+.scroll-smooth {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Hide scrollbar but keep functionality */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Glass effect for overlays */
+.glass {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  background: rgba(255, 255, 255, 0.8);
+}
+
+@media (prefers-color-scheme: dark) {
+  .glass {
+    background: rgba(28, 25, 23, 0.8);
+  }
+}
+
+/* Number display for damage/healing popups */
+.damage-number {
+  color: var(--damage-flash);
+  font-weight: bold;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.heal-number {
+  color: var(--heal-flash);
+  font-weight: bold;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Critical hit glow effect */
+.crit-glow {
+  box-shadow: 0 0 15px var(--crit-glow), 0 0 30px var(--crit-glow);
+}
+
+/* HP Bar enhancements */
+.hp-bar {
+  position: relative;
+  overflow: hidden;
+}
+
+.hp-bar::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transform: translateX(-100%);
+}
+
+.hp-bar.animate::after {
+  animation: shimmer 1s ease-out;
+}
+
+/* Card hover lift effect */
+.card-lift {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+@media (prefers-color-scheme: dark) {
+  .card-lift:hover {
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+  }
+}
+
+/* Message bubble stagger animation */
+.message-enter {
+  animation: fade-in-up 0.4s ease-out backwards;
+}
+
+/* Dice result emphasis */
+.dice-result {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+/* Screen shake for big hits */
+.screen-shake {
+  animation: shake-intense 0.3s ease-in-out;
 }

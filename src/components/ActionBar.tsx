@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { QuickAction, Character, Ability } from '@/types/game';
 import { getQuickActions } from '@/data/mockData';
 
@@ -32,23 +32,28 @@ function ActionButton({
       disabled={isDisabled}
       className={`
         relative flex flex-col items-center justify-center
-        min-w-[70px] px-3 py-2 rounded-xl
-        transition-all duration-200
+        min-w-[76px] min-h-[72px] px-3 py-3 rounded-2xl
+        transition-all duration-200 touch-target
         ${isDisabled 
-          ? 'bg-stone-100 dark:bg-stone-800 text-stone-400 cursor-not-allowed opacity-60' 
-          : 'bg-gradient-to-br from-amber-100 to-orange-100 dark:from-amber-900/30 dark:to-orange-900/30 text-stone-800 dark:text-stone-200 hover:shadow-lg hover:scale-105 active:scale-95 border border-amber-300 dark:border-amber-700'
+          ? 'bg-stone-100 dark:bg-stone-800 text-stone-400 cursor-not-allowed opacity-50' 
+          : 'bg-gradient-to-br from-amber-100 via-orange-50 to-amber-100 dark:from-amber-900/40 dark:via-orange-900/30 dark:to-amber-900/40 text-stone-800 dark:text-stone-200 hover:shadow-lg hover:scale-105 active:scale-95 border-2 border-amber-300 dark:border-amber-700 shadow-md'
         }
       `}
       title={ability?.description}
     >
-      <span className="text-xl">{action.icon}</span>
-      <span className="text-xs font-medium mt-0.5 whitespace-nowrap">{action.label}</span>
+      <span className={`text-2xl ${!isDisabled ? 'group-hover:scale-110' : ''}`}>{action.icon}</span>
+      <span className="text-xs font-semibold mt-1 whitespace-nowrap">{action.label}</span>
       
       {/* Cooldown indicator */}
       {isOnCooldown && ability && (
-        <div className="absolute -top-1 -right-1 w-5 h-5 bg-stone-600 text-white text-xs rounded-full flex items-center justify-center font-bold">
+        <div className="absolute -top-2 -right-2 w-6 h-6 bg-stone-700 dark:bg-stone-600 text-white text-xs rounded-full flex items-center justify-center font-bold shadow-md border-2 border-white dark:border-stone-900">
           {ability.currentCooldown}
         </div>
+      )}
+      
+      {/* Ready indicator for abilities */}
+      {ability && !isOnCooldown && !disabled && (
+        <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full shadow-md border-2 border-white dark:border-stone-900 animate-pulse" />
       )}
     </button>
   );
@@ -63,9 +68,17 @@ export function ActionBar({
 }: ActionBarProps) {
   const [customInput, setCustomInput] = useState('');
   const [showCustomInput, setShowCustomInput] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
   
   const quickActions = getQuickActions(character);
   const isDisabled = disabled || !isPlayerTurn;
+
+  // Focus input when opened
+  useEffect(() => {
+    if (showCustomInput && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [showCustomInput]);
 
   const handleCustomSubmit = () => {
     if (customInput.trim()) {
@@ -80,6 +93,10 @@ export function ActionBar({
       e.preventDefault();
       handleCustomSubmit();
     }
+    if (e.key === 'Escape') {
+      setShowCustomInput(false);
+      setCustomInput('');
+    }
   };
 
   // Get ability for action if it's an ability type
@@ -91,16 +108,17 @@ export function ActionBar({
   };
 
   return (
-    <div className="bg-white dark:bg-stone-900 border-t border-stone-200 dark:border-stone-700 p-3 space-y-3">
-      {/* Turn status */}
+    <div className="bg-white/95 dark:bg-stone-900/95 backdrop-blur-md border-t border-stone-200 dark:border-stone-700 p-4 space-y-3 shadow-lg">
+      {/* Turn status indicator */}
       {!isPlayerTurn && (
-        <div className="text-center text-sm text-stone-500 dark:text-stone-400 py-2 bg-stone-100 dark:bg-stone-800 rounded-lg">
-          ⏳ Waiting for enemies...
+        <div className="text-center text-sm text-stone-500 dark:text-stone-400 py-3 bg-stone-100 dark:bg-stone-800 rounded-xl flex items-center justify-center gap-2 animate-pulse-soft">
+          <span className="text-lg">⏳</span>
+          <span className="font-medium">Waiting for enemies...</span>
         </div>
       )}
 
-      {/* Quick actions */}
-      <div className="flex gap-2 overflow-x-auto pb-2 -mx-1 px-1">
+      {/* Quick actions carousel */}
+      <div className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1 scrollbar-hide scroll-smooth">
         {quickActions.map((action) => (
           <ActionButton
             key={action.id}
@@ -117,39 +135,39 @@ export function ActionBar({
           disabled={isDisabled}
           className={`
             flex flex-col items-center justify-center
-            min-w-[70px] px-3 py-2 rounded-xl
-            transition-all duration-200
+            min-w-[76px] min-h-[72px] px-3 py-3 rounded-2xl
+            transition-all duration-200 touch-target
             ${isDisabled 
-              ? 'bg-stone-100 dark:bg-stone-800 text-stone-400 cursor-not-allowed opacity-60' 
+              ? 'bg-stone-100 dark:bg-stone-800 text-stone-400 cursor-not-allowed opacity-50' 
               : showCustomInput
-                ? 'bg-blue-500 text-white'
-                : 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-900/50 border border-blue-300 dark:border-blue-700'
+                ? 'bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-lg scale-105 border-2 border-blue-400'
+                : 'bg-gradient-to-br from-blue-100 to-indigo-100 dark:from-blue-900/40 dark:to-indigo-900/40 text-blue-700 dark:text-blue-300 hover:shadow-lg hover:scale-105 active:scale-95 border-2 border-blue-300 dark:border-blue-700 shadow-md'
             }
           `}
         >
-          <span className="text-xl">💬</span>
-          <span className="text-xs font-medium mt-0.5">Custom</span>
+          <span className="text-2xl">{showCustomInput ? '✏️' : '💬'}</span>
+          <span className="text-xs font-semibold mt-1">Custom</span>
         </button>
       </div>
 
       {/* Custom action input */}
       {showCustomInput && isPlayerTurn && (
-        <div className="flex gap-2 animate-fade-in">
+        <div className="flex gap-3 animate-fade-in">
           <input
+            ref={inputRef}
             type="text"
             value={customInput}
             onChange={(e) => setCustomInput(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Describe your action..."
-            className="flex-1 px-4 py-2 rounded-xl border border-stone-300 dark:border-stone-600 bg-white dark:bg-stone-800 text-stone-800 dark:text-stone-200 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-amber-500"
-            autoFocus
+            className="flex-1 px-5 py-4 rounded-2xl border-2 border-stone-300 dark:border-stone-600 bg-white dark:bg-stone-800 text-stone-800 dark:text-stone-200 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent text-base touch-target"
           />
           <button
             onClick={handleCustomSubmit}
             disabled={!customInput.trim()}
-            className="px-4 py-2 bg-amber-500 text-white rounded-xl font-medium hover:bg-amber-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="px-6 py-4 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-2xl font-semibold hover:shadow-lg hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 transition-all duration-200 touch-target min-w-[72px]"
           >
-            Send
+            <span className="text-lg">⚔️</span>
           </button>
         </div>
       )}
@@ -184,8 +202,8 @@ export function SimpleActionInput({
   };
 
   return (
-    <div className="bg-white dark:bg-stone-900 border-t border-stone-200 dark:border-stone-700 p-3">
-      <div className="flex gap-2">
+    <div className="bg-white/95 dark:bg-stone-900/95 backdrop-blur-md border-t border-stone-200 dark:border-stone-700 p-4 shadow-lg">
+      <div className="flex gap-3">
         <input
           type="text"
           value={input}
@@ -193,12 +211,12 @@ export function SimpleActionInput({
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
           disabled={disabled}
-          className="flex-1 px-4 py-3 rounded-xl border border-stone-300 dark:border-stone-600 bg-white dark:bg-stone-800 text-stone-800 dark:text-stone-200 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-amber-500 disabled:opacity-50"
+          className="flex-1 px-5 py-4 rounded-2xl border-2 border-stone-300 dark:border-stone-600 bg-white dark:bg-stone-800 text-stone-800 dark:text-stone-200 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent disabled:opacity-50 text-base touch-target"
         />
         <button
           onClick={handleSubmit}
           disabled={!input.trim() || disabled}
-          className="px-6 py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-xl font-medium hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+          className="px-8 py-4 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-2xl font-semibold hover:shadow-lg hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 transition-all duration-200 touch-target"
         >
           ⚔️
         </button>

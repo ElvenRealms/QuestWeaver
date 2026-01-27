@@ -295,9 +295,20 @@ export default function GamePage() {
   if (isLoading || !gameState) {
     return (
       <div className="min-h-screen flex items-center justify-center parchment-bg">
-        <div className="text-center animate-pulse">
-          <span className="text-6xl block mb-4">🏰</span>
-          <p className="text-stone-600 dark:text-stone-400">Loading your adventure...</p>
+        <div className="text-center">
+          <div className="relative">
+            <span className="text-7xl block mb-4 animate-float">🏰</span>
+            <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-16 h-3 bg-stone-300 dark:bg-stone-700 rounded-full blur-md opacity-50" />
+          </div>
+          <h2 className="text-xl font-bold text-stone-700 dark:text-stone-300 mb-2">QuestWeaver</h2>
+          <p className="text-stone-500 dark:text-stone-400 flex items-center justify-center gap-2">
+            <span>Loading your adventure</span>
+            <span className="flex space-x-1">
+              <span className="w-1.5 h-1.5 bg-amber-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
+              <span className="w-1.5 h-1.5 bg-amber-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
+              <span className="w-1.5 h-1.5 bg-amber-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
+            </span>
+          </p>
         </div>
       </div>
     );
@@ -330,8 +341,14 @@ export default function GamePage() {
 
       {/* Processing indicator */}
       {isProcessing && (
-        <div className="fixed bottom-24 left-1/2 -translate-x-1/2 bg-amber-500 text-white px-4 py-2 rounded-full text-sm font-medium shadow-lg animate-pulse">
-          🎲 The DM is narrating...
+        <div className="fixed bottom-28 left-1/2 -translate-x-1/2 bg-gradient-to-r from-amber-500 to-orange-500 text-white px-6 py-3 rounded-2xl text-sm font-semibold shadow-xl animate-bounce-in flex items-center gap-3 z-40">
+          <span className="animate-dice-roll inline-block">🎲</span>
+          <span>The DM is weaving the tale...</span>
+          <span className="flex space-x-1">
+            <span className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
+            <span className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
+            <span className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
+          </span>
         </div>
       )}
 

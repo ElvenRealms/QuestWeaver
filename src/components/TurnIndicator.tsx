@@ -27,19 +27,19 @@ export function TurnIndicator({ encounter, character, isPlayerTurn }: TurnIndica
 
   return (
     <div className={`
-      px-4 py-2 rounded-full shadow-lg flex items-center gap-2 text-sm font-medium
-      transition-all duration-300 animate-pulse-soft
+      px-5 py-2.5 rounded-full shadow-lg flex items-center gap-3 text-sm font-bold
+      transition-all duration-300 animate-turn-pulse
       ${isPlayerTurn 
-        ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white' 
-        : 'bg-gradient-to-r from-red-600 to-red-800 text-white'
+        ? 'bg-gradient-to-r from-amber-400 via-orange-500 to-amber-400 text-white ring-2 ring-amber-300/50' 
+        : 'bg-gradient-to-r from-red-600 via-red-700 to-red-600 text-white ring-2 ring-red-400/50'
       }
     `}>
-      <span className="text-lg">{current.portrait}</span>
-      <span>
-        {isPlayerTurn ? 'Your Turn!' : `${current.name}'s Turn`}
+      <span className={`text-xl ${isPlayerTurn ? 'animate-bounce' : ''}`}>{current.portrait}</span>
+      <span className="whitespace-nowrap">
+        {isPlayerTurn ? '⚔️ Your Turn!' : `${current.name}'s Turn`}
       </span>
-      <span className="opacity-75 text-xs">
-        Round {encounter.round}
+      <span className="text-xs opacity-80 bg-black/20 px-2 py-0.5 rounded-full">
+        R{encounter.round}
       </span>
     </div>
   );
@@ -77,44 +77,65 @@ export function TurnOrder({ encounter, character }: TurnOrderProps) {
   };
 
   return (
-    <div className="flex items-center gap-1 overflow-x-auto pb-2">
+    <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide scroll-smooth">
       {encounter.turnOrder.map((id, index) => {
         const entity = getEntityInfo(id);
         if (!entity) return null;
         
         const isCurrent = id === encounter.currentTurn;
-        const hpPercent = (entity.hp.current / entity.hp.max) * 100;
+        const hpPercent = Math.max(0, Math.min(100, (entity.hp.current / entity.hp.max) * 100));
+        
+        const getHpColor = () => {
+          if (hpPercent > 50) return 'bg-green-500';
+          if (hpPercent > 25) return 'bg-yellow-500';
+          return 'bg-red-500';
+        };
         
         return (
           <div
             key={id}
             className={`
-              relative flex flex-col items-center px-2 py-1 rounded-lg min-w-[60px]
-              transition-all duration-200
+              relative flex flex-col items-center px-3 py-2 rounded-xl min-w-[68px]
+              transition-all duration-300 ease-out
               ${isCurrent 
-                ? 'bg-amber-100 dark:bg-amber-900/30 ring-2 ring-amber-500 scale-110' 
-                : 'bg-stone-100 dark:bg-stone-800/50'
+                ? 'bg-gradient-to-br from-amber-100 to-orange-100 dark:from-amber-900/50 dark:to-orange-900/40 ring-2 ring-amber-500 scale-110 shadow-md z-10' 
+                : 'bg-stone-100/80 dark:bg-stone-800/60 hover:bg-stone-200 dark:hover:bg-stone-700'
               }
-              ${entity.isDefeated ? 'opacity-40 grayscale' : ''}
+              ${entity.isDefeated ? 'opacity-40 grayscale scale-90' : ''}
             `}
+            style={{ 
+              animationDelay: `${index * 0.05}s`,
+            }}
           >
-            <span className="text-xl">{entity.portrait}</span>
-            <span className="text-[10px] font-medium truncate max-w-[50px] text-stone-600 dark:text-stone-400">
+            {/* Portrait */}
+            <span className={`text-2xl ${isCurrent && !entity.isDefeated ? 'animate-bounce' : ''}`}>
+              {entity.isDefeated ? '💀' : entity.portrait}
+            </span>
+            
+            {/* Name */}
+            <span className="text-[10px] font-semibold truncate max-w-[55px] text-stone-600 dark:text-stone-400 mt-0.5">
               {entity.isPlayer ? 'You' : entity.name.split(' ')[0]}
             </span>
+            
             {/* Mini HP bar */}
-            <div className="w-full h-1 bg-stone-300 dark:bg-stone-600 rounded-full mt-1 overflow-hidden">
+            <div className="w-full h-1.5 bg-stone-300 dark:bg-stone-600 rounded-full mt-1.5 overflow-hidden shadow-inner">
               <div 
-                className={`h-full rounded-full transition-all duration-300 ${
-                  hpPercent > 50 ? 'bg-green-500' : 
-                  hpPercent > 25 ? 'bg-yellow-500' : 'bg-red-500'
-                }`}
+                className={`h-full rounded-full transition-all duration-500 ease-out ${getHpColor()}`}
                 style={{ width: `${hpPercent}%` }}
               />
             </div>
-            {isCurrent && (
-              <div className="absolute -bottom-1 left-1/2 -translate-x-1/2">
-                <span className="text-amber-500 animate-bounce">▼</span>
+            
+            {/* Current turn indicator */}
+            {isCurrent && !entity.isDefeated && (
+              <div className="absolute -bottom-2 left-1/2 -translate-x-1/2">
+                <span className="text-amber-500 text-sm animate-bounce drop-shadow-md">▼</span>
+              </div>
+            )}
+            
+            {/* Player indicator */}
+            {entity.isPlayer && !entity.isDefeated && (
+              <div className="absolute -top-1 -right-1 w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center shadow-sm border-2 border-white dark:border-stone-900">
+                <span className="text-[8px] text-white font-bold">P</span>
               </div>
             )}
           </div>
