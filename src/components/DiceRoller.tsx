@@ -10,39 +10,14 @@ interface DiceRollerProps {
 }
 
 const DICE_OPTIONS = [
-  { notation: '1d4', label: 'D4', sides: 4, color: 'from-purple-500 to-purple-700' },
-  { notation: '1d6', label: 'D6', sides: 6, color: 'from-blue-500 to-blue-700' },
-  { notation: '1d8', label: 'D8', sides: 8, color: 'from-green-500 to-green-700' },
-  { notation: '1d10', label: 'D10', sides: 10, color: 'from-yellow-500 to-yellow-700' },
-  { notation: '1d12', label: 'D12', sides: 12, color: 'from-orange-500 to-orange-700' },
-  { notation: '1d20', label: 'D20', sides: 20, color: 'from-red-500 to-red-700' },
-  { notation: '1d100', label: 'D100', sides: 100, color: 'from-pink-500 to-pink-700' },
+  { notation: '1d4', label: 'D4', sides: 4 },
+  { notation: '1d6', label: 'D6', sides: 6 },
+  { notation: '1d8', label: 'D8', sides: 8 },
+  { notation: '1d10', label: 'D10', sides: 10 },
+  { notation: '1d12', label: 'D12', sides: 12 },
+  { notation: '1d20', label: 'D20', sides: 20 },
+  { notation: '1d100', label: 'D100', sides: 100 },
 ];
-
-function RollingDice({ sides, isRolling }: { sides: number; isRolling: boolean }) {
-  const [displayNumber, setDisplayNumber] = useState(sides);
-  
-  useEffect(() => {
-    if (isRolling) {
-      const interval = setInterval(() => {
-        setDisplayNumber(Math.floor(Math.random() * sides) + 1);
-      }, 50);
-      return () => clearInterval(interval);
-    }
-  }, [isRolling, sides]);
-  
-  return (
-    <div className={`
-      w-24 h-24 flex items-center justify-center
-      bg-gradient-to-br from-stone-100 to-stone-200 dark:from-stone-700 dark:to-stone-800
-      rounded-xl shadow-lg border-2 border-stone-300 dark:border-stone-600
-      font-mono text-4xl font-black text-stone-700 dark:text-stone-200
-      ${isRolling ? 'animate-dice-roll' : ''}
-    `}>
-      {isRolling ? displayNumber : '?'}
-    </div>
-  );
-}
 
 export function DiceRoller({ onRoll, defaultDice = '1d20' }: DiceRollerProps) {
   const [selectedDice, setSelectedDice] = useState(defaultDice);
@@ -84,10 +59,7 @@ export function DiceRoller({ onRoll, defaultDice = '1d20' }: DiceRollerProps) {
   const isFail = lastRoll && isCriticalFailure(lastRoll);
 
   return (
-    <div className={`
-      bg-white dark:bg-stone-800 rounded-2xl shadow-xl p-5 space-y-5
-      ${shakeScreen ? 'animate-shake-intense' : ''}
-    `}>
+    <div className={`space-y-5 ${shakeScreen ? 'animate-shake' : ''}`}>
       {/* Dice selection grid */}
       <div className="flex flex-wrap justify-center gap-2">
         {DICE_OPTIONS.map((dice) => (
@@ -98,11 +70,11 @@ export function DiceRoller({ onRoll, defaultDice = '1d20' }: DiceRollerProps) {
               setShowResult(false);
             }}
             className={`
-              min-w-[52px] min-h-[52px] px-3 py-2 rounded-xl font-bold text-sm
-              transition-all duration-200 touch-target
+              min-w-[52px] min-h-[52px] px-3 py-2 rounded-lg font-['Cinzel'] font-bold text-sm
+              transition-all duration-200 touch-target border-2
               ${selectedDice === dice.notation
-                ? `bg-gradient-to-br ${dice.color} text-white shadow-lg scale-110 ring-2 ring-white/30`
-                : 'bg-stone-100 dark:bg-stone-700 text-stone-600 dark:text-stone-300 hover:scale-105 hover:bg-stone-200 dark:hover:bg-stone-600'
+                ? 'bg-gradient-to-br from-[var(--burgundy)] to-[var(--burgundy-dark)] text-[var(--parchment)] shadow-lg scale-110 border-[var(--gold)]'
+                : 'bg-[var(--parchment-light)] border-[var(--gold)]/30 text-[var(--ink)] hover:scale-105 hover:bg-[var(--parchment)] hover:border-[var(--gold)]/60'
               }
             `}
           >
@@ -115,22 +87,22 @@ export function DiceRoller({ onRoll, defaultDice = '1d20' }: DiceRollerProps) {
       <div className="flex items-center justify-center gap-4">
         <button
           onClick={() => setModifier(m => m - 1)}
-          className="w-12 h-12 rounded-full bg-stone-100 dark:bg-stone-700 text-stone-600 dark:text-stone-300 font-bold text-2xl hover:bg-stone-200 dark:hover:bg-stone-600 transition-all duration-200 hover:scale-110 active:scale-95 touch-target flex items-center justify-center"
+          className="w-12 h-12 rounded-lg bg-[var(--parchment-light)] border-2 border-[var(--gold)]/30 text-[var(--ink)] font-bold text-2xl hover:bg-[var(--parchment)] hover:border-[var(--gold)] transition-all duration-200 hover:scale-110 active:scale-95 touch-target flex items-center justify-center"
         >
           −
         </button>
         <div className="text-center min-w-[90px]">
           <span className={`
-            text-3xl font-mono font-black 
-            ${modifier > 0 ? 'text-green-600 dark:text-green-400' : modifier < 0 ? 'text-red-600 dark:text-red-400' : 'text-stone-800 dark:text-stone-200'}
+            text-3xl font-['Cinzel_Decorative'] font-bold
+            ${modifier > 0 ? 'text-[var(--heal)]' : modifier < 0 ? 'text-[var(--damage)]' : 'text-[var(--ink)]'}
           `}>
             {modifier >= 0 ? '+' : ''}{modifier}
           </span>
-          <p className="text-xs text-stone-500 dark:text-stone-400 mt-1">modifier</p>
+          <p className="text-xs text-[var(--ink-light)] font-['IM_Fell_English'] italic mt-1">modifier</p>
         </div>
         <button
           onClick={() => setModifier(m => m + 1)}
-          className="w-12 h-12 rounded-full bg-stone-100 dark:bg-stone-700 text-stone-600 dark:text-stone-300 font-bold text-2xl hover:bg-stone-200 dark:hover:bg-stone-600 transition-all duration-200 hover:scale-110 active:scale-95 touch-target flex items-center justify-center"
+          className="w-12 h-12 rounded-lg bg-[var(--parchment-light)] border-2 border-[var(--gold)]/30 text-[var(--ink)] font-bold text-2xl hover:bg-[var(--parchment)] hover:border-[var(--gold)] transition-all duration-200 hover:scale-110 active:scale-95 touch-target flex items-center justify-center"
         >
           +
         </button>
@@ -141,18 +113,18 @@ export function DiceRoller({ onRoll, defaultDice = '1d20' }: DiceRollerProps) {
         onClick={handleRoll}
         disabled={isRolling}
         className={`
-          w-full py-5 rounded-2xl font-bold text-xl text-white
-          bg-gradient-to-br ${selectedOption.color}
+          w-full py-5 rounded-lg font-['Cinzel'] font-bold text-xl
+          btn-primary
           hover:shadow-2xl hover:scale-[1.02] active:scale-[0.98]
           transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed
           touch-target min-h-[60px]
-          ${isRolling ? 'animate-pulse' : ''}
+          ${isRolling ? 'animate-pulse-soft' : ''}
         `}
       >
         {isRolling ? (
           <span className="inline-flex items-center gap-3">
-            <span className="animate-dice-bounce inline-block">🎲</span>
-            Rolling...
+            <span className="animate-dice-roll inline-block">🎲</span>
+            Casting the bones...
           </span>
         ) : (
           <span className="inline-flex items-center gap-3">
@@ -164,41 +136,41 @@ export function DiceRoller({ onRoll, defaultDice = '1d20' }: DiceRollerProps) {
       {/* Result display */}
       {showResult && lastRoll && (
         <div className={`
-          text-center p-5 rounded-2xl transition-all duration-300
+          text-center p-5 rounded-lg transition-all duration-300 border-2
           ${isCrit 
-            ? 'bg-gradient-to-br from-yellow-100 to-amber-100 dark:from-yellow-900/40 dark:to-amber-900/40 ring-4 ring-yellow-400 animate-glow-pulse' 
+            ? 'bg-gradient-to-br from-[var(--gold)]/20 to-[var(--gold)]/10 border-[var(--gold)] animate-glow-pulse' 
             : isFail 
-              ? 'bg-gradient-to-br from-red-100 to-rose-100 dark:from-red-900/40 dark:to-rose-900/40 ring-4 ring-red-400' 
-              : 'bg-stone-100 dark:bg-stone-700/80'
+              ? 'bg-gradient-to-br from-[var(--damage)]/20 to-[var(--damage)]/10 border-[var(--damage)]' 
+              : 'bg-[var(--parchment-light)] border-[var(--gold)]/30'
           }
           animate-bounce-in
         `}>
-          <div className="text-sm text-stone-500 dark:text-stone-400 mb-2 font-medium">
+          <div className="text-sm text-[var(--ink-light)] mb-2 font-['Cinzel'] font-medium">
             {lastRoll.dice}
           </div>
           <div className={`
-            text-6xl font-black font-mono dice-result
-            ${isCrit ? 'text-yellow-600 dark:text-yellow-400' :
-              isFail ? 'text-red-600 dark:text-red-400' :
-              'text-stone-800 dark:text-stone-200'
+            text-6xl font-['Cinzel_Decorative'] font-bold dice-result
+            ${isCrit ? 'dice-crit' :
+              isFail ? 'dice-fumble' :
+              'text-[var(--burgundy)]'
             }
           `}>
             {lastRoll.modifiedTotal ?? lastRoll.total}
           </div>
           {lastRoll.results.length > 1 && (
-            <div className="text-sm text-stone-500 dark:text-stone-400 mt-2 font-mono">
+            <div className="text-sm text-[var(--ink-light)] mt-2 font-['Crimson_Text']">
               [{lastRoll.results.join(' + ')}] = {lastRoll.total}
               {lastRoll.modifier && ` ${lastRoll.modifier >= 0 ? '+' : ''}${lastRoll.modifier}`}
             </div>
           )}
           {isCrit && (
-            <div className="text-yellow-600 dark:text-yellow-400 font-black mt-3 text-lg animate-pulse tracking-wide">
-              ✨ CRITICAL SUCCESS! ✨
+            <div className="text-[var(--gold)] font-['Cinzel'] font-bold mt-3 text-lg animate-pulse-soft tracking-widest">
+              ✦ CRITICAL SUCCESS ✦
             </div>
           )}
           {isFail && (
-            <div className="text-red-600 dark:text-red-400 font-black mt-3 text-lg tracking-wide">
-              💀 Critical Failure!
+            <div className="text-[var(--damage)] font-['Cinzel'] font-bold mt-3 text-lg tracking-widest">
+              ☠ Critical Failure
             </div>
           )}
         </div>
@@ -233,12 +205,12 @@ export function QuickDiceButton({
       onClick={handleClick}
       disabled={isRolling}
       className={`
-        px-4 py-2 rounded-xl bg-purple-100 dark:bg-purple-900/30 
-        text-purple-700 dark:text-purple-300 font-semibold text-sm
-        hover:bg-purple-200 dark:hover:bg-purple-900/50
+        px-4 py-2 rounded-lg border-2 border-[var(--copper)] bg-[var(--parchment-light)]
+        text-[var(--copper)] font-['Cinzel'] font-semibold text-sm
+        hover:bg-[var(--parchment)] hover:border-[var(--gold)]
         hover:scale-105 active:scale-95
         transition-all duration-200 touch-target min-h-[44px]
-        ${isRolling ? 'animate-pulse' : ''}
+        ${isRolling ? 'animate-pulse-soft' : ''}
       `}
     >
       <span className={isRolling ? 'animate-dice-roll inline-block' : ''}>🎲</span>

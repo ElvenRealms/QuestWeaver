@@ -14,39 +14,38 @@ function RollDisplay({ roll }: { roll: DiceRoll }) {
   const [showResult, setShowResult] = useState(false);
   
   useEffect(() => {
-    // Small delay to trigger the animation
     const timer = setTimeout(() => setShowResult(true), 100);
     return () => clearTimeout(timer);
   }, []);
   
   return (
     <div className={`
-      inline-flex items-center gap-2 px-4 py-2 rounded-xl font-mono text-sm
-      transition-all duration-300
+      inline-flex items-center gap-3 px-5 py-3 rounded-lg font-mono text-sm
+      transition-all duration-300 border-2
       ${isCrit 
-        ? 'bg-gradient-to-r from-yellow-100 to-amber-100 dark:from-yellow-900/40 dark:to-amber-900/40 text-yellow-800 dark:text-yellow-200 ring-2 ring-yellow-400 animate-glow-pulse' 
+        ? 'bg-gradient-to-br from-[#F5E08C]/30 to-[#C9A227]/20 border-[#C9A227] animate-glow-pulse' 
         : isFail 
-          ? 'bg-gradient-to-r from-red-100 to-rose-100 dark:from-red-900/40 dark:to-rose-900/40 text-red-800 dark:text-red-200 ring-2 ring-red-400' 
-          : 'bg-stone-100 dark:bg-stone-700/80'
+          ? 'bg-gradient-to-br from-[#8B0000]/20 to-[#5C1F2A]/10 border-[#8B0000]' 
+          : 'bg-[var(--parchment-light)] border-[var(--copper)]'
       }
     `}>
-      <span className={`text-xl ${showResult ? 'animate-dice-bounce' : ''}`}>🎲</span>
-      <span className="font-bold text-stone-600 dark:text-stone-300">{roll.dice}:</span>
+      <span className={`text-2xl ${showResult ? 'animate-dice-bounce' : ''}`}>🎲</span>
+      <span className="font-['Cinzel'] font-semibold text-[var(--ink-light)]">{roll.dice}:</span>
       <span className={`
-        dice-result text-lg font-bold
+        dice-result text-2xl font-bold font-['Cinzel_Decorative']
         ${showResult ? 'animate-pop-in' : 'opacity-0'}
-        ${isCrit ? 'text-yellow-600 dark:text-yellow-400' : isFail ? 'text-red-600 dark:text-red-400' : 'text-stone-800 dark:text-stone-200'}
+        ${isCrit ? 'dice-crit' : isFail ? 'dice-fumble' : 'text-[var(--foreground)]'}
       `}>
         {formatRollResult(roll)}
       </span>
       {isCrit && (
-        <span className="text-yellow-600 dark:text-yellow-400 font-bold text-xs uppercase tracking-wide animate-pulse">
-          ✨ CRIT!
+        <span className="text-[var(--gold)] font-['Cinzel'] font-bold text-xs uppercase tracking-widest animate-pulse-soft flex items-center gap-1">
+          <span>✦</span> CRITICAL <span>✦</span>
         </span>
       )}
       {isFail && (
-        <span className="text-red-600 dark:text-red-400 font-bold text-xs uppercase tracking-wide">
-          💀 FUMBLE
+        <span className="text-[var(--damage)] font-['Cinzel'] font-bold text-xs uppercase tracking-widest flex items-center gap-1">
+          <span>☠</span> FUMBLE
         </span>
       )}
     </div>
@@ -57,22 +56,22 @@ function MessageBubble({ message, index }: { message: Message; index: number }) 
   const getMessageStyles = () => {
     switch (message.type) {
       case 'narrative':
-        return 'bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/30 dark:to-orange-900/20 border-l-4 border-amber-500 text-stone-800 dark:text-stone-200 shadow-md';
+        return 'message-narrative';
       case 'action':
-        return 'bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/20 border-r-4 border-blue-500 text-blue-900 dark:text-blue-100 ml-auto max-w-[85%] shadow-md';
+        return 'message-action ml-auto max-w-[85%]';
       case 'system':
-        return 'bg-stone-100/80 dark:bg-stone-800/80 text-stone-500 dark:text-stone-400 text-center text-sm italic backdrop-blur-sm';
+        return 'message-system';
       case 'roll':
-        return 'bg-gradient-to-br from-purple-50 to-violet-50 dark:from-purple-900/30 dark:to-violet-900/20 text-purple-900 dark:text-purple-100 text-center shadow-md';
+        return 'message-roll';
       default:
-        return 'bg-white dark:bg-stone-800';
+        return 'card';
     }
   };
 
   const getIcon = () => {
     switch (message.type) {
       case 'narrative':
-        return '📜';
+        return null; // Using CSS pseudo-element instead
       case 'action':
         return '⚔️';
       case 'system':
@@ -86,36 +85,42 @@ function MessageBubble({ message, index }: { message: Message; index: number }) 
 
   const icon = getIcon();
 
+  // Check if narrative starts with a letter (for drop cap)
+  const shouldUseDropCap = message.type === 'narrative' && 
+    message.content.length > 100 && 
+    /^[A-Za-z]/.test(message.content);
+
   return (
     <div 
       className={`
-        p-4 rounded-xl transition-all duration-200 hover:shadow-lg
+        transition-all duration-200 hover:shadow-lg
         message-enter
         ${getMessageStyles()}
       `}
-      style={{ animationDelay: `${index * 0.05}s` }}
+      style={{ animationDelay: `${index * 0.08}s` }}
     >
       {message.type === 'narrative' && (
         <div className="flex items-start gap-3">
-          <span className="text-2xl shrink-0 opacity-80">{icon}</span>
-          <p className="leading-relaxed whitespace-pre-wrap text-[15px]">{message.content}</p>
+          <p className={`leading-relaxed text-[17px] text-[var(--ink)] ${shouldUseDropCap ? 'drop-cap' : ''}`}>
+            {message.content}
+          </p>
         </div>
       )}
       
       {message.type === 'action' && (
         <div className="flex items-start gap-3 justify-end">
-          <p className="leading-relaxed text-[15px]">{message.content}</p>
+          <p className="leading-relaxed text-[15px] font-medium text-[var(--sepia)]">{message.content}</p>
           <span className="text-xl shrink-0 opacity-80">{icon}</span>
         </div>
       )}
       
       {message.type === 'system' && (
-        <p className="py-1 text-xs font-medium tracking-wide">{message.content}</p>
+        <p className="py-1 text-xs font-['Cinzel'] font-medium tracking-wider uppercase">{message.content}</p>
       )}
       
       {message.type === 'roll' && (
         <div className="flex flex-col items-center gap-3 py-1">
-          <p className="text-sm font-medium text-purple-700 dark:text-purple-300">{message.content}</p>
+          <p className="text-sm font-['Cinzel'] font-semibold text-[var(--copper)]">{message.content}</p>
           {message.rollResult && <RollDisplay roll={message.rollResult} />}
         </div>
       )}
@@ -139,17 +144,20 @@ export function ChatWindow({ messages }: ChatWindowProps) {
   return (
     <div 
       ref={containerRef}
-      className="flex-1 overflow-y-auto p-4 space-y-4 scroll-smooth"
-      style={{
-        backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23d4a574' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-      }}
+      className="flex-1 overflow-y-auto p-5 space-y-5 scroll-smooth"
     >
       {messages.length === 0 ? (
-        <div className="flex items-center justify-center h-full text-stone-400 dark:text-stone-500">
-          <div className="text-center animate-float">
-            <span className="text-5xl block mb-3">📜</span>
-            <p className="text-lg font-medium">Your adventure awaits...</p>
-            <p className="text-sm mt-1 opacity-70">Make your first move!</p>
+        <div className="flex items-center justify-center h-full">
+          <div className="text-center animate-float card-elevated flourish-corner p-8">
+            <span className="text-6xl block mb-4">📜</span>
+            <h2 className="font-['Cinzel_Decorative'] text-2xl text-[var(--burgundy)] mb-2">Your Chronicle Awaits</h2>
+            <p className="text-[var(--ink-light)] font-['IM_Fell_English'] italic text-lg">
+              Every legend begins with a single choice...
+            </p>
+            <div className="divider-ornate mt-4">
+              <span className="text-sm">⚔</span>
+            </div>
+            <p className="text-sm text-[var(--ink-light)] mt-2 opacity-70">Make your first move, hero</p>
           </div>
         </div>
       ) : (
@@ -161,7 +169,7 @@ export function ChatWindow({ messages }: ChatWindowProps) {
           />
         ))
       )}
-      <div ref={bottomRef} className="h-2" />
+      <div ref={bottomRef} className="h-4" />
     </div>
   );
 }

@@ -115,7 +115,7 @@ export default function GamePage() {
       await new Promise(resolve => setTimeout(resolve, 800));
       
       try {
-        sendSystemMessage(`🎯 ${enemy.name}'s turn...`);
+        sendSystemMessage(`⚔ ${enemy.name} prepares to strike...`);
         
         const response = await callGameAI(
           currentState,
@@ -139,7 +139,7 @@ export default function GamePage() {
         
       } catch (error) {
         console.error('Enemy turn failed:', error);
-        sendNarrative(`The ${enemy.name} hesitates, confused by the chaos of battle.`);
+        sendNarrative(`The ${enemy.name} hesitates, its resolve faltering in the chaos of battle.`);
       }
       
       // Advance turn
@@ -149,7 +149,7 @@ export default function GamePage() {
     
     // All enemies done - tick cooldowns at start of player turn
     tickCooldowns();
-    sendSystemMessage(`⚔️ Your turn, hero!`);
+    sendSystemMessage(`✦ The initiative passes to you, hero ✦`);
     
     processingEnemyTurns.current = false;
   }, [sendNarrative, sendSystemMessage, applyAIDelta, nextTurn, tickCooldowns]);
@@ -171,7 +171,7 @@ export default function GamePage() {
           // Roll to attack with Might modifier
           const mightMod = Math.floor((gameState.character.stats.might - 10) / 2);
           roll = rollD20(mightMod);
-          sendRollMessage(`⚔️ Attack roll!`, roll);
+          sendRollMessage(`⚔ Attack Roll`, roll);
           actionDescription = `Attacks with ${gameState.character.equipment.find(e => e.type === 'weapon')?.name || 'weapon'}`;
           break;
         }
@@ -179,7 +179,7 @@ export default function GamePage() {
         case 'ability': {
           const ability = gameState.character.abilities.find(a => a.id === action.abilityId);
           if (!ability || ability.currentCooldown > 0) {
-            sendSystemMessage(`❌ ${action.label} is not ready yet!`);
+            sendSystemMessage(`✗ ${action.label} is not yet ready!`);
             setIsProcessing(false);
             return;
           }
@@ -187,14 +187,14 @@ export default function GamePage() {
           // Roll for ability
           const statMod = Math.floor((gameState.character.stats.might - 10) / 2);
           roll = rollD20(statMod);
-          sendRollMessage(`💥 ${ability.name}!`, roll);
+          sendRollMessage(`✦ ${ability.name}`, roll);
           actionDescription = `Uses ${ability.name}: ${ability.effect}`;
           break;
         }
         
         case 'defend': {
-          actionDescription = 'Takes a defensive stance, bracing for attacks';
-          sendPlayerAction(`🛡️ Defending...`);
+          actionDescription = 'Takes a defensive stance, bracing for the onslaught';
+          sendPlayerAction(`🛡 Assumes a defensive posture...`);
           break;
         }
         
@@ -240,7 +240,7 @@ export default function GamePage() {
       
     } catch (error) {
       console.error('Action failed:', error);
-      sendNarrative('The chaos of battle swirls around you... (try again)');
+      sendNarrative('The weave of fate tangles momentarily... (try your action again)');
     } finally {
       setIsProcessing(false);
     }
@@ -254,7 +254,7 @@ export default function GamePage() {
     setIsProcessing(true);
     
     try {
-      sendPlayerAction(`💬 "${text}"`);
+      sendPlayerAction(`"${text}"`);
       
       // Call AI to interpret the action
       const response = await callGameAI(gameState, text);
@@ -280,7 +280,7 @@ export default function GamePage() {
       
     } catch (error) {
       console.error('Custom action failed:', error);
-      sendNarrative('The DM scratches their head... (try again)');
+      sendNarrative('The chronicler pauses, quill hovering... (try again)');
     } finally {
       setIsProcessing(false);
     }
@@ -288,27 +288,30 @@ export default function GamePage() {
 
   // Handle dice roller results
   const handleDiceRoll = useCallback((roll: DiceRoll) => {
-    sendRollMessage(`🎲 Manual roll: ${roll.dice}`, roll);
+    sendRollMessage(`🎲 Manual Roll: ${roll.dice}`, roll);
   }, [sendRollMessage]);
 
   // Loading state
   if (isLoading || !gameState) {
     return (
       <div className="min-h-screen flex items-center justify-center parchment-bg">
-        <div className="text-center">
+        <div className="text-center card-elevated flourish-corner p-10">
           <div className="relative">
-            <span className="text-7xl block mb-4 animate-float">🏰</span>
-            <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-16 h-3 bg-stone-300 dark:bg-stone-700 rounded-full blur-md opacity-50" />
+            <span className="text-7xl block mb-4 animate-float">📜</span>
+            <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-20 h-4 bg-[var(--ink)] rounded-full blur-lg opacity-20" />
           </div>
-          <h2 className="text-xl font-bold text-stone-700 dark:text-stone-300 mb-2">QuestWeaver</h2>
-          <p className="text-stone-500 dark:text-stone-400 flex items-center justify-center gap-2">
-            <span>Loading your adventure</span>
+          <h2 className="font-['Cinzel_Decorative'] text-2xl font-bold text-[var(--burgundy)] mb-3">QuestWeaver</h2>
+          <p className="text-[var(--ink-light)] font-['IM_Fell_English'] italic flex items-center justify-center gap-2">
+            <span>Unfurling your chronicle</span>
             <span className="flex space-x-1">
-              <span className="w-1.5 h-1.5 bg-amber-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
-              <span className="w-1.5 h-1.5 bg-amber-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
-              <span className="w-1.5 h-1.5 bg-amber-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
+              <span className="w-2 h-2 bg-[var(--gold)] rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
+              <span className="w-2 h-2 bg-[var(--gold)] rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
+              <span className="w-2 h-2 bg-[var(--gold)] rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
             </span>
           </p>
+          <div className="divider-ornate mt-6">
+            <span className="text-xs">❧</span>
+          </div>
         </div>
       </div>
     );
@@ -341,14 +344,23 @@ export default function GamePage() {
 
       {/* Processing indicator */}
       {isProcessing && (
-        <div className="fixed bottom-28 left-1/2 -translate-x-1/2 bg-gradient-to-r from-amber-500 to-orange-500 text-white px-6 py-3 rounded-2xl text-sm font-semibold shadow-xl animate-bounce-in flex items-center gap-3 z-40">
-          <span className="animate-dice-roll inline-block">🎲</span>
-          <span>The DM is weaving the tale...</span>
-          <span className="flex space-x-1">
-            <span className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
-            <span className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
-            <span className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
-          </span>
+        <div className="fixed bottom-28 left-1/2 -translate-x-1/2 z-40">
+          <div className="card-elevated animate-bounce-in flex items-center gap-4 px-6 py-4">
+            <span className="animate-dice-roll inline-block text-2xl">🎲</span>
+            <div>
+              <p className="font-['Cinzel'] font-semibold text-[var(--burgundy)] text-sm">
+                The Chronicler Writes...
+              </p>
+              <p className="text-xs text-[var(--ink-light)] font-['IM_Fell_English'] italic">
+                Fate weaves your story
+              </p>
+            </div>
+            <span className="flex space-x-1 ml-2">
+              <span className="w-2 h-2 bg-[var(--gold)] rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
+              <span className="w-2 h-2 bg-[var(--gold)] rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
+              <span className="w-2 h-2 bg-[var(--gold)] rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
+            </span>
+          </div>
         </div>
       )}
 

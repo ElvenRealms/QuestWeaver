@@ -3,8 +3,9 @@
 
 import { GameState, AIResponse, Character, Enemy, Encounter, Message } from '@/types/game';
 
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY || 'AIzaSyCepSAIMAuoZ2JkSMVtbMCS9-6fSguzaJY';
-const GEMINI_MODEL = 'gemini-2.5-flash';
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+// DO NOT CHANGE THIS MODEL - Elven's preference (2026-01-27)
+const GEMINI_MODEL = 'gemini-3-flash-preview';
 const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
 
 // System prompt that defines the DM's personality and behavior

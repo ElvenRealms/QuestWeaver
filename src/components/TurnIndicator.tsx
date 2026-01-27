@@ -27,19 +27,19 @@ export function TurnIndicator({ encounter, character, isPlayerTurn }: TurnIndica
 
   return (
     <div className={`
-      px-5 py-2.5 rounded-full shadow-lg flex items-center gap-3 text-sm font-bold
-      transition-all duration-300 animate-turn-pulse
+      px-5 py-2.5 rounded-lg shadow-lg flex items-center gap-3 text-sm font-['Cinzel'] font-bold
+      transition-all duration-300 animate-candlelight border-2
       ${isPlayerTurn 
-        ? 'bg-gradient-to-r from-amber-400 via-orange-500 to-amber-400 text-white ring-2 ring-amber-300/50' 
-        : 'bg-gradient-to-r from-red-600 via-red-700 to-red-600 text-white ring-2 ring-red-400/50'
+        ? 'bg-gradient-to-r from-[var(--gold-dark)] via-[var(--gold)] to-[var(--gold-dark)] text-[var(--ink)] border-[var(--gold-light)] ring-2 ring-[var(--gold)]/30' 
+        : 'bg-gradient-to-r from-[var(--burgundy-dark)] via-[var(--burgundy)] to-[var(--burgundy-dark)] text-[var(--parchment)] border-[var(--burgundy-light)] ring-2 ring-[var(--burgundy)]/30'
       }
     `}>
-      <span className={`text-xl ${isPlayerTurn ? 'animate-bounce' : ''}`}>{current.portrait}</span>
-      <span className="whitespace-nowrap">
-        {isPlayerTurn ? '⚔️ Your Turn!' : `${current.name}'s Turn`}
+      <span className={`text-xl ${isPlayerTurn ? 'animate-bounce-soft' : ''}`}>{current.portrait}</span>
+      <span className="whitespace-nowrap tracking-wide">
+        {isPlayerTurn ? '✦ Your Turn' : `${current.name}'s Turn`}
       </span>
-      <span className="text-xs opacity-80 bg-black/20 px-2 py-0.5 rounded-full">
-        R{encounter.round}
+      <span className="text-xs opacity-80 bg-[var(--ink)]/20 px-2 py-0.5 rounded-full">
+        Round {encounter.round}
       </span>
     </div>
   );
@@ -85,21 +85,15 @@ export function TurnOrder({ encounter, character }: TurnOrderProps) {
         const isCurrent = id === encounter.currentTurn;
         const hpPercent = Math.max(0, Math.min(100, (entity.hp.current / entity.hp.max) * 100));
         
-        const getHpColor = () => {
-          if (hpPercent > 50) return 'bg-green-500';
-          if (hpPercent > 25) return 'bg-yellow-500';
-          return 'bg-red-500';
-        };
-        
         return (
           <div
             key={id}
             className={`
-              relative flex flex-col items-center px-3 py-2 rounded-xl min-w-[68px]
-              transition-all duration-300 ease-out
+              relative flex flex-col items-center px-3 py-2 rounded-lg min-w-[70px]
+              transition-all duration-300 ease-out border
               ${isCurrent 
-                ? 'bg-gradient-to-br from-amber-100 to-orange-100 dark:from-amber-900/50 dark:to-orange-900/40 ring-2 ring-amber-500 scale-110 shadow-md z-10' 
-                : 'bg-stone-100/80 dark:bg-stone-800/60 hover:bg-stone-200 dark:hover:bg-stone-700'
+                ? 'bg-gradient-to-br from-[var(--gold)]/20 to-[var(--gold)]/10 border-[var(--gold)] scale-110 shadow-md z-10' 
+                : 'bg-[var(--parchment)] border-[var(--gold)]/30 hover:bg-[var(--parchment-light)] hover:border-[var(--gold)]/50'
               }
               ${entity.isDefeated ? 'opacity-40 grayscale scale-90' : ''}
             `}
@@ -108,19 +102,19 @@ export function TurnOrder({ encounter, character }: TurnOrderProps) {
             }}
           >
             {/* Portrait */}
-            <span className={`text-2xl ${isCurrent && !entity.isDefeated ? 'animate-bounce' : ''}`}>
+            <span className={`text-2xl ${isCurrent && !entity.isDefeated ? 'animate-bounce-soft' : ''}`}>
               {entity.isDefeated ? '💀' : entity.portrait}
             </span>
             
             {/* Name */}
-            <span className="text-[10px] font-semibold truncate max-w-[55px] text-stone-600 dark:text-stone-400 mt-0.5">
-              {entity.isPlayer ? 'You' : entity.name.split(' ')[0]}
+            <span className="text-[10px] font-['Cinzel'] font-semibold truncate max-w-[55px] text-[var(--ink-light)] mt-0.5">
+              {entity.isPlayer ? 'Hero' : entity.name.split(' ')[0]}
             </span>
             
             {/* Mini HP bar */}
-            <div className="w-full h-1.5 bg-stone-300 dark:bg-stone-600 rounded-full mt-1.5 overflow-hidden shadow-inner">
+            <div className="w-full h-1.5 bg-[var(--parchment-dark)] border border-[var(--gold)]/30 rounded-full mt-1.5 overflow-hidden">
               <div 
-                className={`h-full rounded-full transition-all duration-500 ease-out ${getHpColor()}`}
+                className="h-full rounded-full transition-all duration-500 ease-out bg-gradient-to-r from-[var(--burgundy-light)] to-[var(--burgundy)]"
                 style={{ width: `${hpPercent}%` }}
               />
             </div>
@@ -128,14 +122,14 @@ export function TurnOrder({ encounter, character }: TurnOrderProps) {
             {/* Current turn indicator */}
             {isCurrent && !entity.isDefeated && (
               <div className="absolute -bottom-2 left-1/2 -translate-x-1/2">
-                <span className="text-amber-500 text-sm animate-bounce drop-shadow-md">▼</span>
+                <span className="text-[var(--gold)] text-sm animate-bounce-soft drop-shadow-md">▼</span>
               </div>
             )}
             
-            {/* Player indicator */}
+            {/* Player indicator - wax seal style */}
             {entity.isPlayer && !entity.isDefeated && (
-              <div className="absolute -top-1 -right-1 w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center shadow-sm border-2 border-white dark:border-stone-900">
-                <span className="text-[8px] text-white font-bold">P</span>
+              <div className="absolute -top-1 -right-1 wax-seal w-5 h-5 text-[8px]">
+                P
               </div>
             )}
           </div>

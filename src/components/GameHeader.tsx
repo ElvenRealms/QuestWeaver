@@ -20,18 +20,21 @@ export function GameHeader({
   onOpenDiceRoller,
 }: GameHeaderProps) {
   return (
-    <header className="bg-white/90 dark:bg-stone-900/90 backdrop-blur-md border-b border-stone-200 dark:border-stone-700 sticky top-0 z-30 shadow-sm">
+    <header className="glass sticky top-0 z-30 border-b-2 border-[var(--gold)]">
+      {/* Decorative top border */}
+      <div className="h-1 bg-gradient-to-r from-transparent via-[var(--gold)] to-transparent opacity-60" />
+      
       {/* Main header row */}
       <div className="flex items-center justify-between px-4 py-3 gap-3">
         {/* Logo/Title */}
-        <div className="flex items-center gap-2 shrink-0">
-          <span className="text-3xl drop-shadow-sm">🏰</span>
+        <div className="flex items-center gap-3 shrink-0">
+          <div className="wax-seal text-lg">Q</div>
           <div className="hidden sm:block">
-            <h1 className="text-lg font-black text-stone-800 dark:text-stone-200 tracking-tight">
+            <h1 className="font-['Cinzel_Decorative'] text-xl font-bold text-[var(--burgundy)] tracking-wide">
               QuestWeaver
             </h1>
-            <p className="text-[10px] text-stone-500 dark:text-stone-400 -mt-0.5 font-medium">
-              AI Dungeon Master
+            <p className="text-[10px] text-[var(--ink-light)] font-['IM_Fell_English'] italic -mt-0.5">
+              Chronicle Your Legend
             </p>
           </div>
         </div>
@@ -48,15 +51,15 @@ export function GameHeader({
         )}
 
         {/* Right side actions */}
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex items-center gap-3 shrink-0">
           {/* Dice roller button */}
           <button
             onClick={onOpenDiceRoller}
-            className="p-3 rounded-xl bg-gradient-to-br from-purple-100 to-violet-100 dark:from-purple-900/40 dark:to-violet-900/40 text-purple-700 dark:text-purple-300 hover:shadow-lg hover:scale-105 active:scale-95 transition-all duration-200 touch-target min-w-[44px] min-h-[44px] flex items-center justify-center border border-purple-200 dark:border-purple-800"
+            className="btn-icon group"
             title="Open dice roller"
             aria-label="Open dice roller"
           >
-            <span className="text-xl">🎲</span>
+            <span className="text-xl group-hover:animate-dice-roll">🎲</span>
           </button>
           
           {/* Character sheet toggle */}
@@ -73,6 +76,9 @@ export function GameHeader({
           <TurnOrder encounter={encounter} character={character} />
         </div>
       )}
+      
+      {/* Decorative bottom border */}
+      <div className="h-px bg-gradient-to-r from-transparent via-[var(--burgundy)] to-transparent opacity-30" />
     </header>
   );
 }
