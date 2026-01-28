@@ -129,20 +129,37 @@ function buildActionPrompt(
 }
 
 // Build enemy turn prompt
-function buildEnemyTurnPrompt(enemy: Enemy, state: GameState): string {
-  return `\n## Enemy Turn: ${enemy.name}
+function buildEnemyTurnPrompt(
+  enemy: Enemy,
+  state: GameState,
+  rollResult?: { total: number; modifiedTotal?: number; dice: string }
+): string {
+  let prompt = `\n## Enemy Turn: ${enemy.name}
 
 The ${enemy.name} takes their turn. They can use: ${enemy.abilities.join(', ')}.
 
 Current state:
 - ${enemy.name} HP: ${enemy.hp.current}/${enemy.hp.max}
 - Player HP: ${state.character.hp.current}/${state.character.hp.max}
+`;
 
-Decide what the enemy does and roll internally for them. Make it dramatic!
+  if (rollResult) {
+    const total = rollResult.modifiedTotal ?? rollResult.total;
+    prompt += `\nDice Roll: ${rollResult.dice} = ${total}`;
+    if (total >= 18) prompt += ' (DEVASTATING!)';
+    else if (total >= 12) prompt += ' (Hit!)';
+    else if (total <= 5) prompt += ' (Fumble!)';
+    else prompt += ' (Miss)';
+  }
+
+  prompt += `
+
+Narrate the enemy's attack based on the dice roll result above. Make it dramatic!
 Keep damage reasonable (${enemy.name === 'Goblin Brute' ? '4-8' : '2-5'} damage on hit).
-Miss sometimes to keep it fair (roughly 40% miss rate).
 
 Respond with the JSON format specified.`;
+
+  return prompt;
 }
 
 export interface GameActionRequest {
@@ -163,7 +180,7 @@ export async function callGeminiDM(request: GameActionRequest): Promise<AIRespon
   if (isEnemyTurn && enemyId) {
     const enemy = gameState.encounter?.enemies.find(e => e.id === enemyId);
     if (!enemy) throw new Error(`Enemy ${enemyId} not found`);
-    actionPrompt = buildEnemyTurnPrompt(enemy, gameState);
+    actionPrompt = buildEnemyTurnPrompt(enemy, gameState, rollResult);
   } else {
     actionPrompt = buildActionPrompt(action, rollResult);
   }

@@ -100,59 +100,70 @@ export default function GamePage() {
   const processEnemyTurns = useCallback(async (currentState: GameState) => {
     if (!currentState.encounter || currentState.status !== 'active') return;
     if (processingEnemyTurns.current) return;
-    
+
     processingEnemyTurns.current = true;
-    
+
     // Get living enemies who need to act
     const livingEnemies = currentState.encounter.enemies.filter(e => e.hp.current > 0);
-    
+
     // Process each enemy turn
     for (const enemy of livingEnemies) {
       // Check if game ended
       if (currentState.status !== 'active') break;
-      
+
       // Small delay between enemy actions for drama
       await new Promise(resolve => setTimeout(resolve, 800));
-      
+
       try {
         sendSystemMessage(`⚔ ${enemy.name} prepares to strike...`);
-        
+
+        // Roll dice for enemy attack (visible to player!)
+        const enemyRoll = rollD20(0); // Enemies roll without modifier for simplicity
+        sendRollMessage(`👹 ${enemy.name} Attack Roll`, enemyRoll);
+
+        // Small delay after showing roll for drama
+        await new Promise(resolve => setTimeout(resolve, 400));
+
         const response = await callGameAI(
           currentState,
           '',
-          undefined,
+          {
+            total: enemyRoll.total,
+            modifiedTotal: enemyRoll.modifiedTotal,
+            dice: enemyRoll.dice,
+          },
           true,
           enemy.id
         );
-        
+
         // Display the narrative
         sendNarrative(response.narrative);
-        
+
         // Apply the delta
         applyAIDelta(response);
-        
+
         // Check for defeat
         if (response.delta.encounterStatus === 'defeat') {
           processingEnemyTurns.current = false;
           return;
         }
-        
+
       } catch (error) {
         console.error('Enemy turn failed:', error);
         sendNarrative(`The ${enemy.name} hesitates, its resolve faltering in the chaos of battle.`);
       }
-      
+
       // Advance turn
       nextTurn();
       await new Promise(resolve => setTimeout(resolve, 400));
     }
-    
+
     // All enemies done - tick cooldowns at start of player turn
     tickCooldowns();
     sendSystemMessage(`✦ The initiative passes to you, hero ✦`);
-    
+
     processingEnemyTurns.current = false;
-  }, [sendNarrative, sendSystemMessage, applyAIDelta, nextTurn, tickCooldowns]);
+  }, [sendNarrative, sendSystemMessage, sendRollMessage, applyAIDelta, nextTurn, tickCooldowns]);
 
   // Handle quick action button clicks
   const handleAction = useCallback(async (action: QuickAction) => {
